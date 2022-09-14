@@ -1,4 +1,5 @@
 # Hikaku
+[![GitHub go.mod Go version of a Go module](https://img.shields.io/github/go-mod/go-version/gomods/athens.svg)](https://github.com/opa-oz/hikaku) [![GoDoc reference example](https://img.shields.io/badge/godoc-reference-blue.svg)](https://godoc.org/github.com/opa-oz/hikaku)
 
 <p align="center">Yet another tool for image comparison.</p> 
 
