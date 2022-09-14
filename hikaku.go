@@ -92,6 +92,21 @@ func CompareByHistograms(golden, copper image.Image, params ComparisonParameters
 	return result < params.Threshold, result
 }
 
+// CompareHistogramsOnly is kind of copy of CompareByHistograms, which uses only pre-calculated histograms, instead of images
+func CompareHistogramsOnly(params ComparisonParameters) (bool, float64) {
+	if params.BinsCount == 0 {
+		params.BinsCount = 16
+	}
+
+	if params.Threshold == 0.0 {
+		params.Threshold = 0.2
+	}
+
+	result := compareHistograms(params.NormalizedGoldHist, params.NormalizedCopperHist, params.BinsCount)
+
+	return result < params.Threshold, result
+}
+
 // CompareByParams compares width and height of both images
 func CompareByParams(golden, copper image.Image) bool {
 	return golden.Bounds() == copper.Bounds()

@@ -77,7 +77,7 @@ func makeRound(first, second image.Image, hist1, hist2 hikaku.NormalizedHistogra
 	params := hikaku.ContextParameters{DiffPairs: diffPairs}
 
 	diffMask := hikaku.FindDiffMask(first, second, params)
-	straightForwardDiff := hikaku.ApplyDiff(first, diffMask, 128)
+	straightForwardDiff := hikaku.ApplyDiff(second, diffMask, 128)
 	err := Save("./subjects/"+title1+"_vs_"+title2+".mask.jpg", straightForwardDiff)
 	if err != nil {
 		println(err.Error())
@@ -86,7 +86,7 @@ func makeRound(first, second image.Image, hist1, hist2 hikaku.NormalizedHistogra
 	println("\tSave shapes diff: subject/" + title1 + "_vs_" + title2 + ".shapes.jpg")
 
 	diffShapes := hikaku.FindDiffShapesMask(first, second, params)
-	shapesForwardDiff := hikaku.ApplyDiff(first, diffShapes, 128)
+	shapesForwardDiff := hikaku.ApplyDiff(second, diffShapes, 128)
 	err = Save("./subjects/"+title1+"_vs_"+title2+".shapes.jpg", shapesForwardDiff)
 	if err != nil {
 		println(err.Error())
