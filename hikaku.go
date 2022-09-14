@@ -7,6 +7,7 @@ import (
 	"math"
 )
 
+// Base diff's fill color
 var fillColor = color.RGBA{R: 255, G: 0, B: 0, A: 0xff}
 
 type ComparisonParameters struct {
@@ -137,7 +138,7 @@ func FindDiffMask(golden, copper image.Image, params ContextParameters) *image.R
 
 	for i := range diffPairs {
 		pair := diffPairs[i]
-		result.Set(pair.x, pair.y, fillColor)
+		result.Set(pair.X, pair.Y, fillColor)
 	}
 
 	return result
@@ -158,10 +159,10 @@ func FindDiffShapesMask(golden, copper image.Image, params ContextParameters) *i
 	}
 
 	for _, rect := range diffShapes {
-		if rect.minX == rect.maxX && rect.minY == rect.maxY {
-			result.Set(rect.minX, rect.minY, fillColor)
+		if rect.MinX == rect.MaxX && rect.MinY == rect.MaxY {
+			result.Set(rect.MinX, rect.MinY, fillColor)
 		} else {
-			draw.Draw(result, image.Rect(rect.minX, rect.minY, rect.maxX, rect.maxY), &image.Uniform{C: fillColor}, image.Point{}, draw.Src)
+			draw.Draw(result, image.Rect(rect.MinX, rect.MinY, rect.MaxX, rect.MaxY), &image.Uniform{C: fillColor}, image.Point{}, draw.Src)
 		}
 	}
 

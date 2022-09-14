@@ -5,11 +5,11 @@ import (
 )
 
 type DiffPoint struct {
-	x, y int
+	X, Y int
 }
 
 type Rect struct {
-	minX, minY, maxX, maxY int
+	MinX, MinY, MaxX, MaxY int
 }
 
 var dir = [...]struct{ first, second int }{
@@ -123,13 +123,13 @@ func GetDiffShapes(golden, copper image.Image, params ContextParameters) map[int
 
 	for i := range diffPairs {
 		pair := diffPairs[i]
-		matrix[pair.x][pair.y] = true
+		matrix[pair.X][pair.Y] = true
 	}
 
 	currentShape := 1
 
 	for _, pair := range diffPairs {
-		found := dfs(matrix, visited, pair.x, pair.y, width, height, currentShape)
+		found := dfs(matrix, visited, pair.X, pair.Y, width, height, currentShape)
 
 		if found {
 			currentShape++
@@ -139,16 +139,16 @@ func GetDiffShapes(golden, copper image.Image, params ContextParameters) map[int
 	groups := make(map[int]Rect)
 
 	for _, pair := range diffPairs {
-		index := visited[pair.x][pair.y]
+		index := visited[pair.X][pair.Y]
 		value, ok := groups[index]
 
 		if !ok {
-			groups[index] = Rect{pair.x, pair.y, pair.x, pair.y}
+			groups[index] = Rect{pair.X, pair.Y, pair.X, pair.Y}
 		} else {
-			value.minX = min(value.minX, pair.x)
-			value.maxX = max(value.maxX, pair.x)
-			value.minY = min(value.minY, pair.y)
-			value.maxY = max(value.maxY, pair.y)
+			value.MinX = min(value.MinX, pair.X)
+			value.MaxX = max(value.MaxX, pair.X)
+			value.MinY = min(value.MinY, pair.Y)
+			value.MaxY = max(value.MaxY, pair.Y)
 
 			groups[index] = value
 		}
