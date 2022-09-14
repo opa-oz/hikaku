@@ -1,6 +1,6 @@
 # Hikaku
 
-<p align="center">Yet another tool for two image comparison.</p> 
+<p align="center">Yet another tool for image comparison.</p> 
 
 <p align="center">
 <img src="https://github.com/opa-oz/hikaku/raw/main/docs/golden.png" width="150" alt="Original"/>
@@ -18,15 +18,14 @@ _[en: hikaku](https://www.nihongomaster.com/japanese/dictionary/word/46485/hikak
 
 ### comparison
 
-> noun (common) (futsuumeishi), noun or participle which takes the aux. verb suru, nouns which may take the genitive
-> case particle `no'
+> to compare; to contrast
 
 ## Motivation
 
-**Hikaku** was made for my projects, focused on generating images. I **really** want to compare generated images or
-screenshots **fast** and **reliable**.
+**Hikaku** was created  for my projects, focused on generating images. I **really** wanted a tool to compare generated images or
+screenshots **quickly** and **reliably**.
 
-I'll mention examples below:
+Examples of such projects below:
 
 | Repository | Purpose | Example |
 |------------|---------|---------|
@@ -63,12 +62,13 @@ func compareMyImages(first, second image.Image) {
 
 #### CompareByHistograms
 
-**Description**: Idea is simple:
+**Description**
+<br>Idea is simple:
 
 1. Get histogram for Red, Green and Blue channels
 2. Normalize histograms
 3. Calculate [Hellinger distance](https://en.wikipedia.org/wiki/Hellinger_distance)
-4. Summarize and make decision
+4. Summarize and make decision based on highlighted parts you see 
 
 
 ### Difference highlighting
