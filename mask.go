@@ -23,6 +23,7 @@ type Mask struct {
 	height int
 }
 
+// Draw draws transparent image overlaying target image
 func (c Mask) Draw(targetImage image.Image, img image.Image, transparency uint8) *image.RGBA {
 	maskImage := drawCanvas(c.width, c.height, color.RGBA{R: transparency, G: transparency, B: transparency, A: 0xff})
 

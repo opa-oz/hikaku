@@ -1,5 +1,6 @@
 package hikaku
 
+// check checks that indices inside of matrix's bounds
 func check(x, y, n, m int) bool {
 	return x >= 0 && y >= 0 && x < n-1 && y < m-1
 }

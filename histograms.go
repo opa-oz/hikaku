@@ -5,27 +5,10 @@ import (
 	"math"
 )
 
-func CalcHistogramAlternative(image image.Image) [][3]int {
-	// https://gist.github.com/tristanwietsma/c552e838f21f6fbb5800
-	bounds := image.Bounds()
+type Histogram = [][3]int
+type NormalizedHistogram = [][3]float64
 
-	histogram := make([][3]int, 16)
-
-	for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
-		for x := bounds.Min.X; x < bounds.Max.X; x++ {
-			r, g, b, _ := image.At(x, y).RGBA()
-			// A color's RGBA method returns values in the range [0, 65535].
-			// Shifting by 12 reduces this to the range [0, 15].
-			histogram[r>>12][0]++
-			histogram[g>>12][1]++
-			histogram[b>>12][2]++
-		}
-	}
-
-	return histogram
-}
-
-func CalcHistogram(image image.Image, bins int, maxOpt ...int) [][3]int {
+func calcHistogram(image image.Image, bins int, maxOpt ...int) Histogram {
 	// http://www.sci.utah.edu/~acoste/uou/Image/project1/Arthur_COSTE_Project_1_report.html
 	max := 65535
 
@@ -33,7 +16,7 @@ func CalcHistogram(image image.Image, bins int, maxOpt ...int) [][3]int {
 		max = maxOpt[0]
 	}
 
-	histogram := make([][3]int, bins)
+	histogram := make(Histogram, bins)
 
 	binSize := max / bins
 
@@ -62,8 +45,8 @@ func CalcHistogram(image image.Image, bins int, maxOpt ...int) [][3]int {
 	return histogram
 }
 
-func NormalizeHistogram(histogram [][3]int, resolution float64) [][3]float64 {
-	newHist := make([][3]float64, len(histogram))
+func normalizeHistogram(histogram Histogram, resolution float64) NormalizedHistogram {
+	newHist := make(NormalizedHistogram, len(histogram))
 
 	for i := range histogram {
 		newHist[i][0] = float64(histogram[i][0]) / resolution
@@ -74,7 +57,7 @@ func NormalizeHistogram(histogram [][3]int, resolution float64) [][3]float64 {
 	return newHist
 }
 
-func calcHellinger(golden [][3]float64, copper [][3]float64, index int) float64 {
+func calcHellinger(golden NormalizedHistogram, copper NormalizedHistogram, index int) float64 {
 	//https://en.wikipedia.org/wiki/Hellinger_distance
 	result := 0.0
 
@@ -87,7 +70,7 @@ func calcHellinger(golden [][3]float64, copper [][3]float64, index int) float64 
 	return result
 }
 
-func CompareHistograms(golden [][3]float64, copper [][3]float64, bins int) float64 {
+func compareHistograms(golden NormalizedHistogram, copper NormalizedHistogram, bins int) float64 {
 	goldenRed := make([]float64, bins)
 	copperRed := make([]float64, bins)
 

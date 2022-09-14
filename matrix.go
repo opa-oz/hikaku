@@ -60,6 +60,8 @@ var dir = [...]struct{ first, second int }{
 	{-1, -2},
 }
 
+// dfs is an implementation of Depth-first search algorithm
+// @see {@link https://en.wikipedia.org/wiki/Depth-first_search}
 func dfs(matrix [][]bool, visited [][]int, x, y, n, m int, currentShape int) bool {
 	if !check(x, y, n, m) || !matrix[x][y] || visited[x][y] != 0 {
 		return false
@@ -77,6 +79,9 @@ func dfs(matrix [][]bool, visited [][]int, x, y, n, m int, currentShape int) boo
 	return true
 }
 
+// GetDiffPairs gets pairs of pixels, that are different in the both images
+// It returns slice of pairs (x,y), representing pixel's coordinates
+// Works with both Gray and RGBA images
 func GetDiffPairs(golden, copper image.Image) []DiffPoint {
 	bounds := golden.Bounds()
 	result := make([]DiffPoint, bounds.Max.Y*bounds.Max.X)
@@ -95,11 +100,19 @@ func GetDiffPairs(golden, copper image.Image) []DiffPoint {
 	return result[0:amount]
 }
 
-func GetDiffShapes(golden, copper image.Image) map[int]Rect {
+// GetDiffShapes finds shapes (rectangles) inside diff to avoid "too noisy" diff as a result
+func GetDiffShapes(golden, copper image.Image, params ContextParameters) map[int]Rect {
 	bounds := golden.Bounds()
-	diffPairs := getDiffPairs(golden, copper)
 	width := bounds.Max.X
 	height := bounds.Max.Y
+
+	var diffPairs []DiffPoint
+
+	if params.DiffPairs != nil {
+		diffPairs = params.DiffPairs
+	} else {
+		diffPairs = GetDiffPairsGrayscale(golden, copper)
+	}
 
 	matrix := make([][]bool, width)
 	visited := make([][]int, width)

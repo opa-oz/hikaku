@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/opa-oz/hikaku"
 	"image"
 	_ "image/jpeg"
@@ -40,42 +41,84 @@ func Save(path string, img image.Image) error {
 	return nil
 }
 
+func decide(input bool) string {
+	if !input {
+		return "[Different]"
+	}
+
+	return "[Identical]"
+}
+
+func makeRound(first, second image.Image, hist1, hist2 hikaku.NormalizedHistogram, title1, title2 string) {
+	compParams := hikaku.ComparisonParameters{BinsCount: 16, Threshold: 0.2}
+
+	println("\t", title1, " vs ", title2)
+	byParams := hikaku.CompareByParams(first, second)
+
+	println("\t\t1. Compared by params:", decide(byParams))
+
+	println("\t\t2. Compared by histograms:")
+
+	compParams.NormalizedGoldHist = hist1
+	compParams.NormalizedCopperHist = hist2
+	byHistograms, diff := hikaku.CompareByHistograms(first, second, compParams)
+
+	fmt.Printf("\t\t\t - threshold (0.2): %s (%F)\n", decide(byHistograms), diff)
+	compParams.Threshold = 0.1
+	byHistograms, diff = hikaku.CompareByHistograms(first, second, compParams)
+	fmt.Printf("\t\t\t - threshold (0.1): %s (%F)\n", decide(byHistograms), diff)
+	compParams.Threshold = 0.05
+	byHistograms, diff = hikaku.CompareByHistograms(first, second, compParams)
+	fmt.Printf("\t\t\t - threshold (0.05): %s (%F)\n", decide(byHistograms), diff)
+
+	println("\n\tSave mask diff: subject/" + title1 + "_vs_" + title2 + ".mask.jpg")
+
+	diffPairs := hikaku.GetDiffPairsGrayscale(first, second)
+	params := hikaku.ContextParameters{DiffPairs: diffPairs}
+
+	diffMask := hikaku.FindDiffMask(first, second, params)
+	straightForwardDiff := hikaku.ApplyDiff(first, diffMask, 128)
+	err := Save("./subjects/"+title1+"_vs_"+title2+".mask.jpg", straightForwardDiff)
+	if err != nil {
+		println(err.Error())
+	}
+
+	println("\tSave shapes diff: subject/" + title1 + "_vs_" + title2 + ".shapes.jpg")
+
+	diffShapes := hikaku.FindDiffShapesMask(first, second, params)
+	shapesForwardDiff := hikaku.ApplyDiff(first, diffShapes, 128)
+	err = Save("./subjects/"+title1+"_vs_"+title2+".shapes.jpg", shapesForwardDiff)
+	if err != nil {
+		println(err.Error())
+	}
+}
+
 func main() {
-	copperImage, err := Open("./subjects/copper.png")
-	goldenImage, err2 := Open("./subjects/golden.png")
+	original, oErr := Open("./subjects/golden.jpg")
+	slightlyChanged, sErr := Open("./subjects/copper2.jpg")
+	completelyDifferent, cErr := Open("./subjects/copper.jpg")
 
-	if err != nil {
-		println(err.Error())
-
+	if oErr != nil {
+		println(oErr.Error())
 	}
 
-	if err != nil {
-		println(err2.Error())
+	if sErr != nil {
+		println(sErr.Error())
 	}
 
-	byParams := hikaku.CompareByParams(goldenImage, copperImage)
-
-	println("Result by params:", byParams)
-
-	byHistograms, diff := hikaku.CompareByHistograms(goldenImage, copperImage, hikaku.Parameters{})
-
-	println("Result by histograms:", byHistograms, "with diff", diff)
-
-	byBoth, bDiff := hikaku.Compare(goldenImage, copperImage, hikaku.Parameters{})
-
-	println("Result by both:", byBoth, "with diff", bDiff)
-
-	diffMask := hikaku.FindDiffMask(goldenImage, copperImage)
-	straightForwardDiff := hikaku.ApplyDiff(goldenImage, diffMask)
-	err = Save("./subjects/diff_mask.png", straightForwardDiff)
-	if err != nil {
-		println(err.Error())
+	if cErr != nil {
+		println(sErr.Error())
 	}
 
-	diffShapes := hikaku.FindDiffShapesMask(goldenImage, copperImage)
-	shapesForwardDiff := hikaku.ApplyDiff(goldenImage, diffShapes)
-	err = Save("./subjects/diff_shapes.png", shapesForwardDiff)
-	if err != nil {
-		println(err.Error())
-	}
+	compParams := hikaku.ComparisonParameters{BinsCount: 16, Threshold: 0.2}
+
+	originalHist := hikaku.PrepareHistogram(original, compParams)
+	slightlyChangedHist := hikaku.PrepareHistogram(slightlyChanged, compParams)
+	completelyDifferentHist := hikaku.PrepareHistogram(completelyDifferent, compParams)
+
+	println("# First round")
+	makeRound(original, slightlyChanged, originalHist, slightlyChangedHist, "Original", "SlightlyChanged")
+	println("\n# Second round")
+	makeRound(original, completelyDifferent, originalHist, completelyDifferentHist, "Original", "CompletelyDifferent")
+
 }

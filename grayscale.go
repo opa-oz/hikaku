@@ -5,7 +5,7 @@ import (
 	"image/color"
 )
 
-func Grayscale(img image.Image) (result *image.Gray) {
+func grayscale(img image.Image) (result *image.Gray) {
 	bounds := img.Bounds()
 
 	result = image.NewGray(bounds)
