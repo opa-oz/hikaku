@@ -4,6 +4,7 @@ import (
 	"github.com/opa-oz/hikaku"
 	"image"
 	_ "image/jpeg"
+	"image/png"
 	_ "image/png"
 	"os"
 	"path/filepath"
@@ -28,9 +29,20 @@ func Open(path string) (img image.Image, err error) {
 	return img, err
 }
 
+func Save(path string, img image.Image) error {
+	pathToFile, err := filepath.Abs(path)
+	f, _ := os.Create(pathToFile)
+	err = png.Encode(f, img)
+	if err != nil {
+		return nil
+	}
+
+	return nil
+}
+
 func main() {
-	copperImage, err := Open("./subjects/copper.jpg")
-	goldenImage, err2 := Open("./subjects/golden.jpg")
+	copperImage, err := Open("./subjects/copper.png")
+	goldenImage, err2 := Open("./subjects/golden.png")
 
 	if err != nil {
 		println(err.Error())
@@ -45,11 +57,25 @@ func main() {
 
 	println("Result by params:", byParams)
 
-	byHistograms := hikaku.CompareByHistograms(goldenImage, copperImage, hikaku.Parameters{})
+	byHistograms, diff := hikaku.CompareByHistograms(goldenImage, copperImage, hikaku.Parameters{})
 
-	println("Result by histograms:", byHistograms)
+	println("Result by histograms:", byHistograms, "with diff", diff)
 
-	byBoth := hikaku.Compare(goldenImage, copperImage, hikaku.Parameters{})
+	byBoth, bDiff := hikaku.Compare(goldenImage, copperImage, hikaku.Parameters{})
 
-	println("Result by both:", byBoth)
+	println("Result by both:", byBoth, "with diff", bDiff)
+
+	diffMask := hikaku.FindDiffMask(goldenImage, copperImage)
+	straightForwardDiff := hikaku.ApplyDiff(goldenImage, diffMask)
+	err = Save("./subjects/diff_mask.png", straightForwardDiff)
+	if err != nil {
+		println(err.Error())
+	}
+
+	diffShapes := hikaku.FindDiffShapesMask(goldenImage, copperImage)
+	shapesForwardDiff := hikaku.ApplyDiff(goldenImage, diffShapes)
+	err = Save("./subjects/diff_shapes.png", shapesForwardDiff)
+	if err != nil {
+		println(err.Error())
+	}
 }
