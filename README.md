@@ -16,15 +16,15 @@
 
 _[en: hikaku](https://www.nihongomaster.com/japanese/dictionary/word/46485/hikaku-比較-ひかく)_
 
-### comparison
+Verb
+<br>比較
 
-> noun (common) (futsuumeishi), noun or participle which takes the aux. verb suru, nouns which may take the genitive
-> case particle `no'
+to compare; to contras
 
 ## Motivation
 
-**Hikaku** was made for my projects, focused on generating images. I **really** want to compare generated images or
-screenshots **fast** and **reliable**.
+**Hikaku** was created for my projects, focused on generating images. I **really** want to compare generated images or
+screenshots **quickly** and **reliably**.
 
 I'll mention examples below:
 
@@ -63,12 +63,13 @@ func compareMyImages(first, second image.Image) {
 
 #### CompareByHistograms
 
-**Description**: Idea is simple:
+**Description**
+<br>Idea is simple:
 
 1. Get histogram for Red, Green and Blue channels
 2. Normalize histograms
 3. Calculate [Hellinger distance](https://en.wikipedia.org/wiki/Hellinger_distance)
-4. Summarize and make decision
+4. Summarize and make decision based on highlighted parts
 
 ### Difference highlighting
 
