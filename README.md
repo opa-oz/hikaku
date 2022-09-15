@@ -1,4 +1,5 @@
 # Hikaku
+
 [![GitHub go.mod Go version of a Go module](https://img.shields.io/github/go-mod/go-version/gomods/athens.svg)](https://github.com/opa-oz/hikaku) [![GoDoc reference example](https://img.shields.io/badge/godoc-reference-blue.svg)](https://godoc.org/github.com/opa-oz/hikaku) [![Hikaku](https://github.com/opa-oz/hikaku/actions/workflows/go.yml/badge.svg)](https://github.com/opa-oz/hikaku/actions/workflows/go.yml)
 
 <p align="center">Yet another tool for image comparison.</p> 
@@ -29,11 +30,19 @@ screenshots **quickly** and **reliably**.
 
 I'll mention examples below:
 
-| Repository | Purpose | Example |
-|------------|---------|---------|
-| tbd        |         |         |
-| tbd        |         |         |
-| tbd        |         |         |
+| Repository       | Purpose                      |
+|------------------|------------------------------|
+| [golden-image](https://github.com/opa-oz/golden-image) | Image-based snapshot testing |
+| tbd              |                              |
+| tbd              |                              |
+
+## Installation
+
+To install `hikaku`, simply use `go get`:
+
+```bash
+$> go get github.com/opa-oz/hikaku
+```
 
 ## Usage
 
@@ -131,6 +140,7 @@ One square to rule them all!
 ### Optimization
 
 If you need to compare huge amount of images, you may want to pre-calculate histograms.
+
 ```go
 package main
 
@@ -141,7 +151,7 @@ import (
 
 func main(original, slightlyChanged, completelyDifferent image.Image) {
 	compParams := hikaku.ComparisonParameters{BinsCount: 16}
-	
+
 	originalHist := hikaku.PrepareHistogram(original, compParams)
 	slightlyChangedHist := hikaku.PrepareHistogram(slightlyChanged, compParams)
 	completelyDifferentHist := hikaku.PrepareHistogram(completelyDifferent, compParams)
@@ -154,12 +164,12 @@ func main(original, slightlyChanged, completelyDifferent image.Image) {
 
 	// 2nd vs 3rd
 	isImagesEqual, diff = hikaku.CompareHistogramsOnly(slightlyChangedHist, completelyDifferentHist, compParams)
-	
+
 	var unexpectedFourth image.Image
 
 	// pass first image's histogram
 	compParams.NormalizedGoldHist = originalHist
-	
+
 	// Yep, you still need to pass `original` image, but it will use pre-calculated histogram for this
 	// while still calculate histogram for 4th image on demand
 	isImagesEqual, diff = hikaku.CompareByHistograms(original, unexpectedFourth, compParams)
